@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>webrtc</title>
+</head>
+<body>
+    <div class="game-wrapper">
+        <section class="player">
+            <h1 id="my-name"></h1>
+            <video id="localVideo" autoplay muted="true"></video>
+        </section>
+    
+        <section class="game">
+            <input type="button" id="start" onclick="testChannel()" value="Start Game"></input>
+            <div class="head">
+                <h1>TiK TaK ToE</h1>
+        
+                <h5 class="display">
+                    player <span class="display-player playerX">x</span>'s turn
+                </h5>
+        
+                <div class="display announcer hide"></div>
+            </div>
+
+            <div class="game-container">
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+            </div>
+
+            <div class="controls">
+                <button id="reset">Reset</button>
+            </div>
+        </section>
+    
+        <section class="player">
+            <h1 id="opponent-name"></h1>
+            <video id="remoteVideo" autoplay></video>
+        </section>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
