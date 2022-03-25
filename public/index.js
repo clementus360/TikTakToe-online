@@ -24,7 +24,7 @@ const resetButton = document.querySelector('#reset');
 const announcer = document.querySelector('.announcer');
 
 
-let board = ['','',,'','','','','','','']
+let board = ['','','','','','','','','']
 
 const PLAYERX_WON = 'PLAYERX_WON';
 const PLAYERO_WON = 'PLAYERO_WON';
@@ -90,10 +90,13 @@ if(navigator.mediaDevices) {
     }
 
     let handleChannelMessage = event => {
-        const message = event.data;
-        console.log(message)
-        gameControl();
-        userAction(tiles[message], message)
+        const message = JSON.parse(event.data);
+        if (message.type === 'ACTION') {
+            gameControl();
+            userAction(tiles[message.payload], message.payload)
+        } else if (message.type === 'RESET') {
+            resetBoard();
+        }
 
     }
 
@@ -110,7 +113,6 @@ if(navigator.mediaDevices) {
 function start(isCaller) {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
     dataChannel = peerConnection.createDataChannel('game')
-    console.log(dataChannel)
 
     peerConnection.ondatachannel = handleChannelCallback
 
@@ -131,7 +133,6 @@ function start(isCaller) {
         remoteVideo.srcObject = e.streams[0]
     }
 
-    console.log(peerConnection)
 
     localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream);
@@ -144,7 +145,6 @@ function start(isCaller) {
         myname.innerHTML = 'O'
         opponentname.innerHTML = 'X'
         gameActive = currentPlayer==myname.innerHTML? true:false
-        console.log(gameActive)
     }
 
 }
@@ -157,7 +157,6 @@ socket.on('new-message', message => {
         myname.innerHTML = 'X'
         opponentname.innerHTML = 'O'
         gameActive = currentPlayer==myname.innerHTML? true:false
-        console.log(gameActive)
     }
 
     let signal = JSON.parse(message)
@@ -190,8 +189,6 @@ function errorHandler(error) {
 }
 
 
-
-
 // Generating a random unique ID
 function createUUID() {
     // http://www.ietf.org/rfc/rfc4122.txt
@@ -212,14 +209,19 @@ function createUUID() {
 
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+
+// Sending game action to remote peer
 function sendAction(index) {
     const move = index
-    dataChannel.send(move)
+    dataChannel.send(JSON.stringify({type: 'ACTION', payload: move}))
+}
+
+function sendReset() {
+    dataChannel.send(JSON.stringify({type: 'RESET', payload: true}))
 }
 
 function gameControl() {
     gameActive = gameActive? false:true
-    console.log(gameActive)
  }
 
 // GAME LOGIC
@@ -323,10 +325,14 @@ tiles.forEach( (tile, index) => {
     });
 });
 
+function handleResetBoard() {
+    sendReset()
+    resetBoard()
+}
 
 const resetBoard = () => {
     board = ['', '', '', '', '', '', '', '', ''];
-    gameActive = true;
+    gameActive = myname.innerHTML=='X'? true:false
     announcer.classList.add('hide');
 
     if (currentPlayer === 'O') {
@@ -340,7 +346,7 @@ const resetBoard = () => {
     });
 }
 
-resetButton.addEventListener('click', resetBoard);
+resetButton.addEventListener('click', handleResetBoard);
 
 
 // socket.on('new-message', message => {

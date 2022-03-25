@@ -4,10 +4,6 @@
     box-sizing: border-box;
 }
 
-body {
-    background: black;
-}
-
 video {
     /* border-radius: 90%; */
     width: 300px;
