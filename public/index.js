@@ -1,11 +1,11 @@
+window.onload = (function game() {
+
 // Setting global variables
 let localStream;
-let remoteStream;
 let peerConnection;
 let room;
 let clientId;
 let dataChannel;
-let receiveChannel;
 let currentPlayer;
 let myPlayer;
 let gameActive;
@@ -32,7 +32,6 @@ const PLAYERX_WON = 'PLAYERX_WON';
 const PLAYERO_WON = 'PLAYERO_WON';
 const TIE = 'TIE';
 
-
 // Setting up WEBRTC stun servers
 var peerConnectionConfig = {
     'iceServers': [
@@ -43,6 +42,7 @@ var peerConnectionConfig = {
 
 // Setting up client-side Socket.io
 let socket = io();
+
 socket.on('room', message => {
     room = message.room
     clientId = message.clientId
@@ -58,8 +58,6 @@ let constraints = {
 }
 
 if(navigator.mediaDevices) {
-
-    // localVideo.srcObject = localStream
     navigator.mediaDevices.getUserMedia(constraints)
         .then (stream => {
             localStream = stream
@@ -70,7 +68,6 @@ if(navigator.mediaDevices) {
                 start(true)
             }  
         }).catch(errorHandler)
-
 
 } else {
     alert('Your browser does not support getUserMedia API');
@@ -99,7 +96,6 @@ if(navigator.mediaDevices) {
         } else if (message.type === 'RESET') {
             resetBoard();
         }
-
     }
 
     let handleChannelCallback = event => {
@@ -109,13 +105,10 @@ if(navigator.mediaDevices) {
         dataChannel.onerror = handleChannelError;
         dataChannel.onclose = handleChannelClose;
     }
-    // end of data channel helper functions
-
 
 function start(isCaller) {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
     dataChannel = peerConnection.createDataChannel('game')
-
     peerConnection.ondatachannel = handleChannelCallback
 
     dataChannel.onopen = handleChannelOpen;
@@ -123,6 +116,15 @@ function start(isCaller) {
     dataChannel.onerror = handleChannelError;
     dataChannel.onclose = handleChannelClose;
 
+    peerConnection.onconnectionstatechange = e => {
+        if(peerConnection.connectionState == 'disconnected') {
+            handleResetBoard()
+            dataChannel.close()
+            peerConnection.close()
+            gameActive= false
+            game()
+        }
+    }
 
     peerConnection.onicecandidate = e => {
         if(e.candidate != null) {
@@ -135,11 +137,9 @@ function start(isCaller) {
         remoteVideo.srcObject = e.streams[0]
     }
 
-
     localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream);
     });
-
 
     if(isCaller) {
         peerConnection.createOffer().then(handleDescription).catch(errorHandler)
@@ -147,13 +147,17 @@ function start(isCaller) {
         myPlayer = 'O'
         myname.innerHTML = `<img src="./src/O.svg">`
         opponentname.innerHTML = `<img src="./src/X.svg">`
+
         myUnderline.classList.add('hide')
-        myUnderline.classList.add('playerO-Underline')
-        opponentUnderline.classList.add('playerX-Underline')
         opponentUnderline.classList.remove('hide')
+
+        myUnderline.classList.remove('playerX-Underline')
+        myUnderline.classList.add('playerO-Underline')
+
+        opponentUnderline.classList.remove('playerO-Underline')
+        opponentUnderline.classList.add('playerX-Underline')
         gameActive = currentPlayer==myPlayer? true:false
     }
-
 }
 
 // Handling Client Receiving Call
@@ -164,10 +168,16 @@ socket.on('new-message', message => {
         myPlayer = 'X'
         myname.innerHTML = `<img src="./src/X.svg">`
         opponentname.innerHTML = `<img src="./src/O.svg">`
+
         myUnderline.classList.remove('hide')
-        myUnderline.classList.add('playerX-Underline')
-        opponentUnderline.classList.add('playerO-Underline')
         opponentUnderline.classList.add('hide')
+
+        myUnderline.classList.remove('playerO-Underline')
+        myUnderline.classList.add('playerX-Underline')
+
+        opponentUnderline.classList.remove('playerX-Underline')
+        opponentUnderline.classList.add('playerO-Underline')
+        
         gameActive = currentPlayer==myPlayer? true:false
     }
 
@@ -200,7 +210,6 @@ function errorHandler(error) {
     alert(error)
 }
 
-
 // Generating a random unique ID
 function createUUID() {
     // http://www.ietf.org/rfc/rfc4122.txt
@@ -217,12 +226,7 @@ function createUUID() {
     return uuid;
 }
 
-
-
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
-// Sending game action to remote peer
+// Sending game actions to remote peer
 function sendAction(index) {
     const move = index
     dataChannel.send(JSON.stringify({type: 'ACTION', payload: move}))
@@ -314,6 +318,7 @@ const handleResults = () => {
 
     if (roundWon) {
         announce (currentPlayer === 'X' ? PLAYERX_WON:PLAYERO_WON );
+        confetti();
         gameActive = false
     }
 
@@ -363,13 +368,5 @@ const resetBoard = () => {
 
 resetButton.addEventListener('click', handleResetBoard);
 
+}())
 
-// socket.on('new-message', message => {
-//     console.log(message)
-// })
-
-// button.addEventListener('click', () => {
-//     socket.emit('message', text.value)
-// })
-
-// Game logics
