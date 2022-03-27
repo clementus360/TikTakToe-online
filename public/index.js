@@ -7,6 +7,7 @@ let clientId;
 let dataChannel;
 let receiveChannel;
 let currentPlayer;
+let myPlayer;
 let gameActive;
 
 // Setting up the local stream
@@ -19,9 +20,10 @@ let opponentname = document.getElementById('opponent-name')
 
 // Game elements
 const tiles = Array.from(document.querySelectorAll('.tile'));
-const playerDisplay = document.querySelector('.display-player');
 const resetButton = document.querySelector('#reset');
 const announcer = document.querySelector('.announcer');
+const myUnderline = document.querySelector('.my-underline')
+const opponentUnderline = document.querySelector('.opponent-underline')
 
 
 let board = ['','','','','','','','','']
@@ -142,9 +144,14 @@ function start(isCaller) {
     if(isCaller) {
         peerConnection.createOffer().then(handleDescription).catch(errorHandler)
         currentPlayer = 'X'
-        myname.innerHTML = 'O'
-        opponentname.innerHTML = 'X'
-        gameActive = currentPlayer==myname.innerHTML? true:false
+        myPlayer = 'O'
+        myname.innerHTML = `<img src="./src/O.svg">`
+        opponentname.innerHTML = `<img src="./src/X.svg">`
+        myUnderline.classList.add('hide')
+        myUnderline.classList.add('playerO-Underline')
+        opponentUnderline.classList.add('playerX-Underline')
+        opponentUnderline.classList.remove('hide')
+        gameActive = currentPlayer==myPlayer? true:false
     }
 
 }
@@ -154,9 +161,14 @@ socket.on('new-message', message => {
     if (!peerConnection) {
         start(false)
         currentPlayer = 'X'
-        myname.innerHTML = 'X'
-        opponentname.innerHTML = 'O'
-        gameActive = currentPlayer==myname.innerHTML? true:false
+        myPlayer = 'X'
+        myname.innerHTML = `<img src="./src/X.svg">`
+        opponentname.innerHTML = `<img src="./src/O.svg">`
+        myUnderline.classList.remove('hide')
+        myUnderline.classList.add('playerX-Underline')
+        opponentUnderline.classList.add('playerO-Underline')
+        opponentUnderline.classList.add('hide')
+        gameActive = currentPlayer==myPlayer? true:false
     }
 
     let signal = JSON.parse(message)
@@ -217,7 +229,7 @@ function sendAction(index) {
 }
 
 function sendReset() {
-    dataChannel.send(JSON.stringify({type: 'RESET', payload: true}))
+    dataChannel.send(JSON.stringify({type: 'RESET'}))
 }
 
 function gameControl() {
@@ -257,22 +269,26 @@ const updateBoard = (index) => {
 }
 
 const changePlayer = () => {
-    playerDisplay.classList.remove(`player${currentPlayer}`)
     currentPlayer = currentPlayer === 'X'? 'O':'X'
-    playerDisplay.innerText = currentPlayer
-    playerDisplay.classList.add(`player${currentPlayer}`)
+    if (currentPlayer == myPlayer) {
+        myUnderline.classList.remove('hide')
+        opponentUnderline.classList.add('hide')
+    } else {
+        myUnderline.classList.add('hide')
+        opponentUnderline.classList.remove('hide')
+    }
 }
 
 const announce = (type) => {
     switch(type) {
         case PLAYERX_WON:
-            announcer.innerHTML = 'Player <span class="playerX">X</span> Won';
+            announcer.innerHTML = 'PLAYER <span class="playerX">X</span> WON';
             break;
         case PLAYERO_WON:
-            announcer.innerHTML = 'Player <span class="playerO">O</span> Won';
+            announcer.innerHTML = 'PLAYER <span class="playerO">O</span> WON';
             break;
         case TIE:
-            announcer.innerHTML = 'The game was tied';
+            announcer.innerHTML = 'THE GAME WAS TIED';
             break;
     }
 
@@ -307,8 +323,7 @@ const handleResults = () => {
 
 const userAction = (tile, index) => {
     if (isValidAction(tile) && gameActive) {
-        tile.innerText = currentPlayer;
-        tile.classList.add(`player${currentPlayer}`);
+        tile.innerHTML = `<img src="./src/${currentPlayer}.svg">`
         updateBoard(index);
         handleResults();
         changePlayer();
@@ -332,7 +347,7 @@ function handleResetBoard() {
 
 const resetBoard = () => {
     board = ['', '', '', '', '', '', '', '', ''];
-    gameActive = myname.innerHTML=='X'? true:false
+    gameActive = myPlayer=='X'? true:false
     announcer.classList.add('hide');
 
     if (currentPlayer === 'O') {

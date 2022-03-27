@@ -4,23 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Rubik:wght@700&display=swap" rel="stylesheet">    <link rel="stylesheet" href="style.css">
     <title>webrtc</title>
 </head>
 <body>
     <div class="game-wrapper">
         <section class="player">
-            <h1 id="my-name"></h1>
             <video id="localVideo" autoplay muted="true"></video>
+            <div id="my-name"></div>
+            <div class="my-underline underline"></div>
         </section>
     
         <section class="game">
             <div class="head">
-                <h1>TiK TaK ToE</h1>
-        
-                <h5 class="display">
-                    player <span class="display-player playerX">x</span>'s turn
-                </h5>
+                <img src="./src/logo.svg" alt="" srcset="">
         
                 <div class="display announcer hide"></div>
             </div>
@@ -38,14 +37,16 @@
             </div>
 
             <div class="controls">
-                <button id="reset">Reset</button>
+                <button id="reset">RESET</button>
             </div>
         </section>
     
         <section class="player">
-            <h1 id="opponent-name"></h1>
             <video id="remoteVideo" autoplay></video>
+            <div id="opponent-name"></div>
+            <div class="opponent-underline underline"></div>
         </section>
+
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
