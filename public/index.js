@@ -137,6 +137,7 @@ function start(isCaller) {
 
     peerConnection.ontrack = e => {
         console.log('got a remote stream')
+        console.log(e.streams[0])
         remoteVideo.srcObject = e.streams[0]
     }
 
