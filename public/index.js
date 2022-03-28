@@ -264,7 +264,7 @@ const winningConditions = [
  ];
 
  const isValidAction = (tile) => {
-     if (tile.innerHTML = `<img src="./src/X.svg">` || tile.innerHTML = `<img src="./src/O.svg">`) {
+     if (tile.innerText === 'X' || tile.innerText === 'O') {
          return false
      }
 
