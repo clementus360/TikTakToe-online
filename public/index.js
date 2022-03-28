@@ -341,13 +341,14 @@ const userAction = (tile, index) => {
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
         if (gameActive) {
+            console.log(isValidAction(tile) && gameActive)
             if (isValidAction(tile)) {
                 sendAction(index)
             }
 
             userAction(tile, index)
             console.log(gameActive)
-            if (isValidAction(tile)) {
+            if (isValidAction(tile) && gameActive) {
                 gameControl();
             }
             console.log(gameActive)
