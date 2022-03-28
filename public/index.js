@@ -344,9 +344,7 @@ tiles.forEach( (tile, index) => {
             if (isValidAction(tile)) {
                 sendAction(index)
             }
-            
             userAction(tile, index)
-
             if (isValidAction(tile)) {
                 gameControl();
             }
