@@ -350,6 +350,7 @@ tiles.forEach( (tile, index) => {
             if (isValidAction(tile)) {
                 gameControl();
             }
+            console.log(gameActive)
         }
     });
 });
