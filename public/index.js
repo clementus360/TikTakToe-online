@@ -335,13 +335,15 @@ const userAction = (tile, index) => {
         updateBoard(index);
         handleResults();
         changePlayer();
-        sendAction(index)
     }
 };
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
         if (gameActive) {
+            if (isValidAction(tile)) {
+                sendAction(index)
+            }
             userAction(tile, index)
             gameControl();
         }
