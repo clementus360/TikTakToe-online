@@ -341,8 +341,8 @@ const userAction = (tile, index) => {
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
         if (gameActive) {
-            console.log(isValidAction(tile) && gameActive)
-            if (isValidAction(tile)) {
+            console.log(isValidAction(tile))
+            if (isValidAction(tile) && gameActive) {
                 sendAction(index)
             }
 
