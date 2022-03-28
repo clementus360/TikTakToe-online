@@ -331,21 +331,21 @@ const handleResults = () => {
 
 const userAction = (tile, index) => {
     if (isValidAction(tile) && gameActive) {
+        sendAction(index)
         tile.innerHTML = `<img src="./src/${currentPlayer}.svg">`
         updateBoard(index);
         handleResults();
         changePlayer();
+        gameControl();
     }
 };
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
         if (gameActive) {
-            if (isValidAction(tile)) {
-                sendAction(index)
-            }
+
             userAction(tile, index)
-            gameControl();
+            
         }
     });
 });
