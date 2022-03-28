@@ -35,11 +35,11 @@ const TIE = 'TIE';
 // Setting up WEBRTC stun servers
 var peerConnectionConfig = {
     iceServers: [
-        {urls: 'stun:stun.l.google.com:19302'},
-        {urls: 'stun:stun1.l.google.com:19302'},
-        {urls: 'stun:stun.stunprotocol.org:3478'},
-        {urls: 'stun:stun.voiparound.com'},
-        {urls: 'stun:stun.fwdnet.net'},
+        {urls: 'stun:stun.l.google.com:19302?transport=tcp'},
+        {urls: 'stun:stun1.l.google.com:19302?transport=tcp'},
+        {urls: 'stun:stun.stunprotocol.org:3478?transport=tcp'},
+        {urls: 'stun:stun.voiparound.com?transport=tcp'},
+        {urls: 'stun:stun.fwdnet.net?transport=tcp'},
     ]
 };
 
