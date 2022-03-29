@@ -9,6 +9,8 @@ let dataChannel;
 let currentPlayer;
 let myPlayer;
 let gameActive;
+let myScore;
+let opponentScore;
 
 // Setting up the local stream
 let localVideo = document.getElementById('localVideo')
@@ -24,6 +26,8 @@ const resetButton = document.querySelector('#reset');
 const announcer = document.querySelector('.announcer');
 const myUnderline = document.querySelector('.my-underline')
 const opponentUnderline = document.querySelector('.opponent-underline')
+const myScoreDisplay = document.querySelector('.my-score')
+const opponentScoreDisplay = document.querySelector('.opponent-score')
 
 
 let board = ['','','','','','','','','']
@@ -53,7 +57,13 @@ socket.on('room', message => {
 })
 
 // Creating an ID
-const uuid = createUUID()
+let userId = localStorage.getItem('userId')
+console.log(userId)
+if (!userId) {
+    const uuid = createUUID()
+    localStorage.setItem('userId', `${uuid}`);
+    userId = localStorage.getItem('userId')
+}
 
 let constraints = {
     video: true,
@@ -109,17 +119,7 @@ if(navigator.mediaDevices) {
         dataChannel.onclose = handleChannelClose;
     }
 
-function start(isCaller) {
-    peerConnection = new RTCPeerConnection(peerConnectionConfig);
-    dataChannel = peerConnection.createDataChannel('game')
-    peerConnection.ondatachannel = handleChannelCallback
-
-    dataChannel.onopen = handleChannelOpen;
-    dataChannel.onmessage = handleChannelMessage;
-    dataChannel.onerror = handleChannelError;
-    dataChannel.onclose = handleChannelClose;
-
-    peerConnection.onconnectionstatechange = e => {
+    function checkPeerConnection() {
         if(peerConnection.connectionState == 'disconnected') {
             handleResetBoard()
             dataChannel.close()
@@ -129,9 +129,24 @@ function start(isCaller) {
         }
     }
 
+function start(isCaller) {
+    peerConnection = new RTCPeerConnection(peerConnectionConfig);
+    console.log(peerConnection)
+    dataChannel = peerConnection.createDataChannel('game')
+    peerConnection.ondatachannel = handleChannelCallback
+
+    dataChannel.onopen = handleChannelOpen;
+    dataChannel.onmessage = handleChannelMessage;
+    dataChannel.onerror = handleChannelError;
+    dataChannel.onclose = handleChannelClose;
+
+    peerConnection.onconnectionstatechange = e => {
+        checkPeerConnection()
+    }
+
     peerConnection.onicecandidate = e => {
         if(e.candidate != null) {
-            socket.emit('message', JSON.stringify({'ice': e.candidate, 'uuid': uuid, 'room': room}))
+            socket.emit('message', JSON.stringify({'ice': e.candidate, 'uuid': userId, 'room': room}))
         }
     };
 
@@ -145,65 +160,83 @@ function start(isCaller) {
     });
 
     if(isCaller) {
-        peerConnection.createOffer().then(handleDescription).catch(errorHandler)
-        currentPlayer = 'X'
-        myPlayer = 'O'
-        myname.innerHTML = `<img src="./src/O.svg">`
-        opponentname.innerHTML = `<img src="./src/X.svg">`
+        peerConnection.createOffer().then(event => {
+            handleDescription(event)
+            if(peerConnection.connectionState == 'connected') {
+                currentPlayer = 'X'
+                myPlayer = 'O'
+                myname.innerHTML = `<img src="./src/O.svg">`
+                opponentname.innerHTML = `<img src="./src/X.svg">`
 
-        myUnderline.classList.add('hide')
-        opponentUnderline.classList.remove('hide')
+                myScoreDisplay.classList.add('playerO')
+                opponentScoreDisplay.classList.add('playerX')
+    
+                myUnderline.classList.add('hide')
+                opponentUnderline.classList.remove('hide')
+    
+                myUnderline.classList.remove('playerX-Underline')
+                myUnderline.classList.add('playerO-Underline')
+    
+                opponentUnderline.classList.remove('playerO-Underline')
+                opponentUnderline.classList.add('playerX-Underline')
 
-        myUnderline.classList.remove('playerX-Underline')
-        myUnderline.classList.add('playerO-Underline')
+                gameActive = currentPlayer==myPlayer? true:false
+            }
+        }).catch(errorHandler)
 
-        opponentUnderline.classList.remove('playerO-Underline')
-        opponentUnderline.classList.add('playerX-Underline')
-        gameActive = currentPlayer==myPlayer? true:false
     }
 }
 
 // Handling Client Receiving Call
 socket.on('new-message', message => {
-    if (!peerConnection) {
-        start(false)
-        currentPlayer = 'X'
-        myPlayer = 'X'
-        myname.innerHTML = `<img src="./src/X.svg">`
-        opponentname.innerHTML = `<img src="./src/O.svg">`
-
-        myUnderline.classList.remove('hide')
-        opponentUnderline.classList.add('hide')
-
-        myUnderline.classList.remove('playerO-Underline')
-        myUnderline.classList.add('playerX-Underline')
-
-        opponentUnderline.classList.remove('playerX-Underline')
-        opponentUnderline.classList.add('playerO-Underline')
-        
-        gameActive = currentPlayer==myPlayer? true:false
-    }
 
     let signal = JSON.parse(message)
 
-    if (signal.sdp) {
-        peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp))
-            .then (() => {
-                if(signal.sdp.type === 'offer') {
-                    peerConnection.createAnswer().then(handleDescription).catch(errorHandler)
-                }
-            }).catch(errorHandler)
+    console.log(signal.uuid)
+    console.log(userId)
+    if (signal.uuid != userId) {
+        if (!peerConnection) {
+            start(false)
+            currentPlayer = 'X'
+            myPlayer = 'X'
+            myname.innerHTML = `<img src="./src/X.svg">`
+            opponentname.innerHTML = `<img src="./src/O.svg">`
+
+            myScoreDisplay.classList.add('playerX')
+            opponentScoreDisplay.classList.add('playerO')
+    
+            myUnderline.classList.remove('hide')
+            opponentUnderline.classList.add('hide')
+    
+            myUnderline.classList.remove('playerO-Underline')
+            myUnderline.classList.add('playerX-Underline')
+    
+            opponentUnderline.classList.remove('playerX-Underline')
+            opponentUnderline.classList.add('playerO-Underline')
+            
+            gameActive = currentPlayer==myPlayer? true:false
+        }
+    
+        if (signal.sdp) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp))
+                .then (() => {
+                    if(signal.sdp.type === 'offer') {
+                        peerConnection.createAnswer().then(handleDescription).catch(errorHandler)
+                    }
+                }).catch(errorHandler)
+        }
+        else if (signal.ice) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
+        }
     }
-    else if (signal.ice) {
-        peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
-    }
+
 })
 
 //Create and Send Session Description
 function handleDescription(e) {
     peerConnection.setLocalDescription(e)
         .then ( () => {
-            socket.emit('message', JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid, 'room': room}))
+            socket.emit('message', JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': userId, 'room': room}))
         })
 }
 
@@ -290,9 +323,23 @@ const announce = (type) => {
     switch(type) {
         case PLAYERX_WON:
             announcer.innerHTML = 'PLAYER <span class="playerX">X</span> WON';
+            if (myPlayer == 'X') {
+                myScore++
+                myScoreDisplay.innerHTML = myScore
+            } else if (myPlayer == 'O') {
+                opponentScore++
+                opponentScore.innerHTML = opponentScore
+            }
             break;
         case PLAYERO_WON:
             announcer.innerHTML = 'PLAYER <span class="playerO">O</span> WON';
+            if (myPlayer == 'O') {
+                myScore++
+                myScoreDisplay.innerHTML = myScore
+            } else if (myPlayer == 'X') {
+                opponentScore++
+                opponentScore.innerHTML = opponentScore
+            }
             break;
         case TIE:
             announcer.innerHTML = 'THE GAME WAS TIED';
@@ -330,28 +377,18 @@ const handleResults = () => {
 }
 
 const userAction = (tile, index) => {
-    if (isValidAction(tile) && gameActive) {
         tile.innerHTML = `<img src="./src/${currentPlayer}.svg">`
         updateBoard(index);
         handleResults();
         changePlayer();
-    }
 };
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
-        if (gameActive) {
-            console.log(isValidAction(tile))
-            if (isValidAction(tile) && gameActive) {
-                sendAction(index)
-            }
-
-            userAction(tile, index)
-            console.log(gameActive)
-            if (isValidAction(tile) && gameActive) {
-                gameControl();
-            }
-            console.log(gameActive)
+        if (isValidAction(tile) && gameActive) {
+            sendAction(index)
+            userAction(tile, index)          
+            gameControl();
         }
     });
 });

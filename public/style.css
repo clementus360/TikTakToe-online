@@ -42,12 +42,16 @@ section {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+    gap: 2vw;
 }
 
 #my-name, #opponent-name {
-    margin-top: 2vw;
     font-size: 5vw;
+}
+
+.score {
+    font-size: 5vw;
+    height: 5vw;
 }
 
 .underline {
@@ -74,11 +78,6 @@ section {
     margin: 2vw;
     width: 10vw;
     height: 5vw;
-}
-
-.head h5 {
-    font-size: 1rem;
-    margin-bottom: 2vw;
 }
 
 .game-container {
