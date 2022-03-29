@@ -337,7 +337,7 @@ const announce = (type) => {
                 myScoreDisplay.innerText = `${myScore}`
             } else if (myPlayer == 'X') {
                 opponentScore++
-                opponentScoreDisplay.innerText = `${myScore}`
+                opponentScoreDisplay.innerText = `${opponentScore}`
             }
             break;
         case TIE:
