@@ -324,20 +324,20 @@ const announce = (type) => {
             announcer.innerHTML = 'PLAYER <span class="playerX">X</span> WON';
             if (myPlayer == 'X') {
                 myScore++
-                myScoreDisplay.innerHTML = myScore
+                myScoreDisplay.innerText = `${myScore}`
             } else if (myPlayer == 'O') {
                 opponentScore++
-                opponentScore.innerHTML = opponentScore
+                opponentScore.innerText = `${opponentScore}`
             }
             break;
         case PLAYERO_WON:
             announcer.innerHTML = 'PLAYER <span class="playerO">O</span> WON';
             if (myPlayer == 'O') {
                 myScore++
-                myScoreDisplay.innerHTML = myScore
+                myScoreDisplay.innerText = `${myScore}`
             } else if (myPlayer == 'X') {
                 opponentScore++
-                opponentScore.innerHTML = opponentScore
+                opponentScore.innerText = `${myScore}`
             }
             break;
         case TIE:
