@@ -327,7 +327,7 @@ const announce = (type) => {
                 myScoreDisplay.innerText = `${myScore}`
             } else if (myPlayer == 'O') {
                 opponentScore++
-                opponentScore.innerText = `${opponentScore}`
+                opponentScoreDisplay.innerText = `${opponentScore}`
             }
             break;
         case PLAYERO_WON:
@@ -337,7 +337,7 @@ const announce = (type) => {
                 myScoreDisplay.innerText = `${myScore}`
             } else if (myPlayer == 'X') {
                 opponentScore++
-                opponentScore.innerText = `${myScore}`
+                opponentScoreDisplay.innerText = `${myScore}`
             }
             break;
         case TIE:
