@@ -160,29 +160,26 @@ function start(isCaller) {
     });
 
     if(isCaller) {
-        peerConnection.createOffer().then(event => {
-            handleDescription(event)
-            if(peerConnection.connectionState == 'connected') {
-                currentPlayer = 'X'
-                myPlayer = 'O'
-                myname.innerHTML = `<img src="./src/O.svg">`
-                opponentname.innerHTML = `<img src="./src/X.svg">`
+        peerConnection.createOffer().then(handleDescription).catch(errorHandler)
 
-                myScoreDisplay.classList.add('playerO')
-                opponentScoreDisplay.classList.add('playerX')
-    
-                myUnderline.classList.add('hide')
-                opponentUnderline.classList.remove('hide')
-    
-                myUnderline.classList.remove('playerX-Underline')
-                myUnderline.classList.add('playerO-Underline')
-    
-                opponentUnderline.classList.remove('playerO-Underline')
-                opponentUnderline.classList.add('playerX-Underline')
+            currentPlayer = 'X'
+            myPlayer = 'O'
+            myname.innerHTML = `<img src="./src/O.svg">`
+            opponentname.innerHTML = `<img src="./src/X.svg">`
 
-                gameActive = currentPlayer==myPlayer? true:false
-            }
-        }).catch(errorHandler)
+            myScoreDisplay.classList.add('playerO')
+            opponentScoreDisplay.classList.add('playerX')
+
+            myUnderline.classList.add('hide')
+            opponentUnderline.classList.remove('hide')
+
+            myUnderline.classList.remove('playerX-Underline')
+            myUnderline.classList.add('playerO-Underline')
+
+            opponentUnderline.classList.remove('playerO-Underline')
+            opponentUnderline.classList.add('playerX-Underline')
+
+            gameActive = currentPlayer==myPlayer? true:false
 
     }
 }
