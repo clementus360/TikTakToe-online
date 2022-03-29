@@ -9,8 +9,8 @@ let dataChannel;
 let currentPlayer;
 let myPlayer;
 let gameActive;
-let myScore;
-let opponentScore;
+let myScore = 0;
+let opponentScore = 0;
 
 // Setting up the local stream
 let localVideo = document.getElementById('localVideo')
