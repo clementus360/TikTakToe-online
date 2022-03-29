@@ -119,14 +119,12 @@ if(navigator.mediaDevices) {
         dataChannel.onclose = handleChannelClose;
     }
 
-    function checkPeerConnection() {
-        if(peerConnection.connectionState == 'disconnected') {
+    function resetPeerConnection() {
             handleResetBoard()
             dataChannel.close()
             peerConnection.close()
             gameActive= false
             game()
-        }
     }
 
 function start(isCaller) {
@@ -141,7 +139,9 @@ function start(isCaller) {
     dataChannel.onclose = handleChannelClose;
 
     peerConnection.onconnectionstatechange = e => {
-        checkPeerConnection()
+        if(peerConnection.connectionState == 'disconnected') {
+            resetPeerConnection()
+        }
     }
 
     peerConnection.onicecandidate = e => {
@@ -189,8 +189,10 @@ socket.on('new-message', message => {
 
     let signal = JSON.parse(message)
 
-    console.log(signal.uuid)
-    console.log(userId)
+    if (signal.uuid == userId) {
+        resetPeerConnection()
+    }
+    
     if (signal.uuid != userId) {
         if (!peerConnection) {
             start(false)
