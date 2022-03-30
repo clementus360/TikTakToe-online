@@ -123,6 +123,7 @@ if(navigator.mediaDevices) {
             handleResetBoard()
             dataChannel.close()
             peerConnection.close()
+            socket.close()
             gameActive= false
             game()
     }
@@ -367,8 +368,9 @@ const handleResults = () => {
 
     if (roundWon) {
         announce (currentPlayer === 'X' ? PLAYERX_WON:PLAYERO_WON );
-        confetti();
         gameActive = false
+        resetButton.disabled = false
+        confetti();
     }
 
     if (!board.includes("")) announce(TIE);
@@ -401,6 +403,7 @@ const resetBoard = () => {
     board = ['', '', '', '', '', '', '', '', ''];
     gameActive = myPlayer=='X'? true:false
     announcer.classList.add('hide');
+    resetButton.disabled = true
 
     if (currentPlayer === 'O') {
         changePlayer();
