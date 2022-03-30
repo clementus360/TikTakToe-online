@@ -59,7 +59,7 @@ socket.on('room', message => {
 
 // Creating an ID
 let userId = localStorage.getItem('userId')
-console.log(userId)
+
 if (!userId) {
     const uuid = createUUID()
     localStorage.setItem('userId', `${uuid}`);
@@ -78,7 +78,6 @@ if(navigator.mediaDevices) {
             localVideo.srcObject = localStream
 
             if (clientId == 2) {
-                console.log('it shube working')
                 start(true)
             }  
         }).catch(errorHandler)
@@ -121,7 +120,6 @@ if(navigator.mediaDevices) {
     }
 
     function resetPeerConnection() {
-            handleResetBoard()
             dataChannel.close()
             peerConnection.close()
             socket.close()
@@ -131,7 +129,7 @@ if(navigator.mediaDevices) {
 
 function start(isCaller) {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
-    console.log(peerConnection)
+
     dataChannel = peerConnection.createDataChannel('game')
     peerConnection.ondatachannel = handleChannelCallback
 
@@ -168,6 +166,8 @@ function start(isCaller) {
             myPlayer = 'O'
             myScore = 0
             opponentScore = 0
+            myScoreDisplay.innerText = `${myScore}`
+            opponentScoreDisplay.innerText = `${opponentScore}`
             gameContinue = true
             myname.innerHTML = `<img src="./src/O.svg">`
             opponentname.innerHTML = `<img src="./src/X.svg">`
@@ -205,6 +205,8 @@ socket.on('new-message', message => {
             myPlayer = 'X'
             myScore = 0
             opponentScore = 0
+            myScoreDisplay.innerText = `${myScore}`
+            opponentScoreDisplay.innerText = `${opponentScore}`
             gameContinue = true
             myname.innerHTML = `<img src="./src/X.svg">`
             opponentname.innerHTML = `<img src="./src/O.svg">`
