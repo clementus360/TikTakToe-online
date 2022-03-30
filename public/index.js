@@ -373,6 +373,7 @@ const handleResults = () => {
     if (roundWon) {
         announce (currentPlayer === 'X' ? PLAYERX_WON:PLAYERO_WON );
         gameActive = false
+        console.log(gameActive)
         resetButton.disabled = false
         confetti();
     }
