@@ -376,9 +376,11 @@ const handleResults = () => {
         console.log(gameActive)
         resetButton.disabled = false
         confetti();
+        console.log(gameActive)
     }
 
     if (!board.includes("")) announce(TIE);
+    console.log(gameActive)
 
 }
 
@@ -391,7 +393,6 @@ const userAction = (tile, index) => {
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
-        console.log(gameActive)
         if (isValidAction(tile) && gameActive) {
             sendAction(index)
             userAction(tile, index)          
