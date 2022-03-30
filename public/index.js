@@ -9,8 +9,8 @@ let dataChannel;
 let currentPlayer;
 let myPlayer;
 let gameActive;
-let myScore = 0;
-let opponentScore = 0;
+let myScore;
+let opponentScore;
 
 // Setting up the local stream
 let localVideo = document.getElementById('localVideo')
@@ -165,6 +165,8 @@ function start(isCaller) {
 
             currentPlayer = 'X'
             myPlayer = 'O'
+            myScore = 0
+            opponentScore = 0
             myname.innerHTML = `<img src="./src/O.svg">`
             opponentname.innerHTML = `<img src="./src/X.svg">`
 
@@ -199,6 +201,8 @@ socket.on('new-message', message => {
             start(false)
             currentPlayer = 'X'
             myPlayer = 'X'
+            myScore = 0
+            opponentScore = 0
             myname.innerHTML = `<img src="./src/X.svg">`
             opponentname.innerHTML = `<img src="./src/O.svg">`
 
@@ -386,6 +390,7 @@ const userAction = (tile, index) => {
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
+        console.log(gameActive)
         if (isValidAction(tile) && gameActive) {
             sendAction(index)
             userAction(tile, index)          
