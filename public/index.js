@@ -304,15 +304,17 @@ const winningConditions = [
      if (tile.innerHTML === `<img src="./src/O.svg">` || tile.innerHTML === `<img src="./src/X.svg">`) {
          return false
      }
-
+     console.log(gameActive)
      return true
  }
 
 const updateBoard = (index) => {
     board[index] = currentPlayer
+    console.log(gameActive)
 }
 
 const changePlayer = () => {
+    console.log(gameActive)
     currentPlayer = currentPlayer === 'X'? 'O':'X'
     if (currentPlayer == myPlayer) {
         myUnderline.classList.remove('hide')
@@ -324,6 +326,7 @@ const changePlayer = () => {
 }
 
 const announce = (type) => {
+    console.log(gameActive)
     switch(type) {
         case PLAYERX_WON:
             announcer.innerHTML = 'PLAYER <span class="playerX">X</span> WON';
@@ -376,15 +379,14 @@ const handleResults = () => {
         console.log(gameActive)
         resetButton.disabled = false
         confetti();
-        console.log(gameActive)
     }
 
     if (!board.includes("")) announce(TIE);
-    console.log(gameActive)
 
 }
 
 const userAction = (tile, index) => {
+    console.log(gameActive)
         tile.innerHTML = `<img src="./src/${currentPlayer}.svg">`
         updateBoard(index);
         handleResults();
@@ -393,6 +395,7 @@ const userAction = (tile, index) => {
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
+        console.log(gameActive)
         if (isValidAction(tile) && gameActive) {
             sendAction(index)
             userAction(tile, index)          
