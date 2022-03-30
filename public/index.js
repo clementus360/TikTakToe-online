@@ -11,6 +11,7 @@ let myPlayer;
 let gameActive;
 let myScore;
 let opponentScore;
+let gameContinue;
 
 // Setting up the local stream
 let localVideo = document.getElementById('localVideo')
@@ -167,6 +168,7 @@ function start(isCaller) {
             myPlayer = 'O'
             myScore = 0
             opponentScore = 0
+            gameContinue = true
             myname.innerHTML = `<img src="./src/O.svg">`
             opponentname.innerHTML = `<img src="./src/X.svg">`
 
@@ -203,6 +205,7 @@ socket.on('new-message', message => {
             myPlayer = 'X'
             myScore = 0
             opponentScore = 0
+            gameContinue = true
             myname.innerHTML = `<img src="./src/X.svg">`
             opponentname.innerHTML = `<img src="./src/O.svg">`
 
@@ -371,7 +374,7 @@ const handleResults = () => {
     }
 
     if (roundWon) {
-        gameActive = true
+        gameContinue = false
         announce (currentPlayer === 'X' ? PLAYERX_WON:PLAYERO_WON );
         resetButton.disabled = false
         confetti();
@@ -390,7 +393,7 @@ const userAction = (tile, index) => {
 
 tiles.forEach( (tile, index) => {
     tile.addEventListener('click', () => {
-        if (isValidAction(tile) && gameActive) {
+        if (isValidAction(tile) && gameActive && gameContinue) {
             sendAction(index)
             userAction(tile, index)          
             gameControl();
@@ -408,6 +411,7 @@ const resetBoard = () => {
     gameActive = myPlayer=='X'? true:false
     announcer.classList.add('hide');
     resetButton.disabled = true
+    gameContinue = true
 
     if (currentPlayer === 'O') {
         changePlayer();
