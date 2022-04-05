@@ -40,6 +40,7 @@ const TIE = 'TIE';
 // Setting up WEBRTC stun servers
 var peerConnectionConfig = {
     iceServers: [
+<<<<<<< HEAD
         {urls: 'stun:stun.l.google.com:19302'},
         {urls: 'stun:stun1.l.google.com:19302'},
         {urls: 'stun:stun.stunprotocol.org:3478'},
@@ -56,6 +57,13 @@ var peerConnectionConfig = {
         username: "openrelayproject",
         credential: "openrelayproject",
         },
+=======
+        {urls: 'stun:stun.l.google.com:19302?transport=tcp'},
+        {urls: 'stun:stun1.l.google.com:19302?transport=tcp'},
+        {urls: 'stun:stun.stunprotocol.org:3478?transport=tcp'},
+        {urls: 'stun:stun.voiparound.com?transport=tcp'},
+        {urls: 'stun:stun.fwdnet.net?transport=tcp'},
+>>>>>>> b8f7510f051bffb5883fe56b9f0c107dbf800e5a
     ]
 };
 
@@ -140,8 +148,13 @@ if(navigator.mediaDevices) {
 
 function start(isCaller) {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
+<<<<<<< HEAD
     dataChannel = peerConnection.createDataChannel('game')
     
+=======
+
+    dataChannel = peerConnection.createDataChannel('game')
+>>>>>>> b8f7510f051bffb5883fe56b9f0c107dbf800e5a
     peerConnection.ondatachannel = handleChannelCallback
 
     dataChannel.onopen = handleChannelOpen;
@@ -156,12 +169,16 @@ function start(isCaller) {
     }
 
     peerConnection.onicecandidate = e => {
+<<<<<<< HEAD
         console.log(e.candidate)
+=======
+>>>>>>> b8f7510f051bffb5883fe56b9f0c107dbf800e5a
         if(e.candidate != null) {
             socket.emit('message', JSON.stringify({'ice': e.candidate, 'uuid': userId, 'room': room}))
         }
     };
 
+<<<<<<< HEAD
     peerConnection.ontrack = ({track, streams}) => {
         track.onunmute = () => {
           if (remoteVideo.srcObject) {
@@ -171,6 +188,12 @@ function start(isCaller) {
         };
       };
       
+=======
+    peerConnection.ontrack = e => {
+        console.log('got a remote stream')
+        remoteVideo.srcObject = e.streams[0]
+    }
+>>>>>>> b8f7510f051bffb5883fe56b9f0c107dbf800e5a
 
     localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream);
@@ -252,7 +275,10 @@ socket.on('new-message', message => {
                 }).catch(errorHandler)
         }
         else if (signal.ice) {
+<<<<<<< HEAD
             console.log(signal.ice)
+=======
+>>>>>>> b8f7510f051bffb5883fe56b9f0c107dbf800e5a
             peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
         }
     }
