@@ -1,0 +1,123 @@
+:root {
+    --blue: #1D61E4;
+    --red: #E41D1D;
+    --grey: #777777;
+  }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+}
+
+body {
+    background: black;
+    font-family: 'Roboto', sans-serif;
+}
+
+video {
+    border-radius: 90%;
+    background: var(--grey);
+    width: 20vw;
+    height: 20vw;
+    object-fit: cover;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+.game-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 100vh;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2vw;
+}
+
+#my-name, #opponent-name {
+    font-size: 5vw;
+}
+
+.score {
+    font-size: 5vw;
+    height: 5vw;
+}
+
+.underline {
+    width: 20%;
+    height: 1vw;
+}
+
+.playerX-Underline {
+    background: var(--red);
+}
+
+.playerO-Underline {
+    background: var(--blue);
+}
+
+
+.head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.head img {
+    margin: 2vw;
+    width: 10vw;
+    height: 5vw;
+}
+
+.game-container {
+    display: grid;
+    grid-template-columns: 10vw 10vw 10vw;
+    grid-template-rows: 10vw 10vw 10vw;
+}
+
+.tile {
+    font-size: 4vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--grey);
+    cursor: pointer;
+}
+
+.tile img {
+    width: 60%;
+    height: 60%;
+}
+
+.playerX {
+    color: var(--red);
+}
+
+.playerO {
+    color: var(--blue);
+}
+
+.hide {
+    visibility: collapse;
+}
+
+.controls button {
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    font-size: 2vw;
+    margin-top: 2vw;
+    border-style: none;
+    width: 10vw;
+    height: 3vw;
+}
