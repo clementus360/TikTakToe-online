@@ -411,7 +411,10 @@ const handleResults = () => {
         confetti();
     }
 
-    if (!board.includes("")) announce(TIE);
+    if (!board.includes("")) {
+        resetButton.disabled = false
+        announce(TIE)
+    };
 
 }
 
